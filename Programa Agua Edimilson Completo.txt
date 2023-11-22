@@ -1,0 +1,228 @@
+import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.HashMap;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<String> registros = new ArrayList<>();
+        ArrayList<Cliente> clientes = new ArrayList<>();
+        ArrayList<Pedido> pedidos = new ArrayList<>();
+        ArrayList<String> pedidosPendentes = new ArrayList<>();
+        HashMap<String, Double> precosAgua = new HashMap<>();
+
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("Selecione a opção:");
+            System.out.println("1. Cadastrar água mineral");
+            System.out.println("2. Remover água mineral");
+            System.out.println("3. Cadastrar Cliente");
+            System.out.println("4. Remover Cliente");
+            System.out.println("5. Listar Clientes");
+            System.out.println("6. Cadastrar Pedido");
+            System.out.println("7. Pedidos Pendentes");
+            System.out.println("8. Sair");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine(); // Limpar o buffer
+
+            switch (opcao) {
+                case 1:
+                    System.out.println("Digite a quantidade de litros:");
+                    int litros = scanner.nextInt();
+                    scanner.nextLine(); // Limpar o buffer
+
+                    System.out.println("Digite o preço:");
+                    double preco = scanner.nextDouble();
+                    scanner.nextLine(); // Limpar o buffer
+
+                    String informacao = litros + " litros = R$" + preco;
+                    registros.add(informacao);
+                    precosAgua.put(informacao, preco); // Armazenar a informação da água com o seu preço.
+                    System.out.println("Água cadastrada: " + informacao);
+                    break;
+                case 2:
+                    if (registros.isEmpty()) {
+                        System.out.println("Não há pedidos para remover.");
+                    } else {
+                        System.out.println("Registros de água mineral:");
+                        for (int i = 0; i < registros.size(); i++) {
+                            System.out.println("[" + (i + 1) + "] " + registros.get(i));
+                        }
+                        System.out.println("[0] Voltar");
+                        System.out.println("Digite o número do pedido a ser removido:");
+                        int indice = scanner.nextInt();
+                        if (indice == 0) {
+                            break; // Volta ao menu principal
+                        } else if (indice > 0 && indice <= registros.size()) {
+                            registros.remove(indice - 1);
+                            System.out.println("Pedido removido com sucesso.");
+                        } else {
+                            System.out.println("Índice inválido.");
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("Digite o nome do cliente:");
+                    String nome = scanner.nextLine();
+
+                    System.out.println("Digite o número de telefone do cliente:");
+                    String telefone = scanner.nextLine();
+
+                    System.out.println("Digite o endereço do cliente:");
+                    String endereco = scanner.nextLine();
+
+                    Cliente novoCliente = new Cliente(nome, telefone, endereco);
+                    clientes.add(novoCliente);
+                    System.out.println("Cliente cadastrado com sucesso!");
+                    break;
+                case 4:
+                    if (clientes.isEmpty()) {
+                        System.out.println("Não há clientes cadastrados para remover.");
+                        break;
+                    }
+
+                    System.out.println("Lista de Clientes:");
+                    for (int i = 0; i < clientes.size(); i++) {
+                        System.out.println("[" + (i + 1) + "] Nome: " + clientes.get(i).nome);
+                    }
+                    System.out.println("[0] Voltar");
+
+                    System.out.println("Selecione o número do cliente a ser removido (ou 0 para voltar):");
+                    int indiceCliente = scanner.nextInt();
+
+                    if (indiceCliente > 0 && indiceCliente <= clientes.size()) {
+                        clientes.remove(indiceCliente - 1);
+                        System.out.println("Cliente removido com sucesso.");
+                    } else if (indiceCliente == 0) {
+                        System.out.println("Voltando ao menu principal...");
+                    } else {
+                        System.out.println("Opção inválida. Nenhum cliente removido.");
+                    }
+                    break;
+                case 5:
+                    if (clientes.isEmpty()) {
+                        System.out.println("Não há clientes cadastrados para mostrar.");
+                    } else {
+                        System.out.println("Lista de Clientes:");
+                        for (int i = 0; i < clientes.size(); i++) {
+                            System.out.println("[" + (i + 1) + "] Nome: " + clientes.get(i).nome + ", Telefone: " + clientes.get(i).telefone + ", Endereço: " + clientes.get(i).endereco);
+                        }
+                    }
+                    break;
+                case 6:
+                    if (clientes.isEmpty()) {
+                        System.out.println("Não há clientes cadastrados para fazer um pedido.");
+                    } else {
+                        System.out.println("Lista de Clientes:");
+                        for (int i = 0; i < clientes.size(); i++) {
+                            System.out.println("[" + (i + 1) + "] Nome: " + clientes.get(i).nome);
+                        }
+                        System.out.println("Selecione o número do cliente para fazer o pedido:");
+                        int indiceClientePedido = scanner.nextInt();
+                        scanner.nextLine(); // Limpar o buffer
+
+                        if (indiceClientePedido > 0 && indiceClientePedido <= clientes.size()) {
+                            Cliente clienteSelecionado = clientes.get(indiceClientePedido - 1);
+
+                            if (!registros.isEmpty()) {
+                                System.out.println("Lista de Águas Disponíveis:");
+                                for (int i = 0; i < registros.size(); i++) {
+                                    System.out.println("[" + (i + 1) + "] " + registros.get(i));
+                                }
+
+                                System.out.println("Selecione o número da água desejada:");
+                                int indiceAgua = scanner.nextInt();
+                                scanner.nextLine(); // Limpar o buffer
+
+                                if (indiceAgua > 0 && indiceAgua <= registros.size()) {
+                                    System.out.println("Digite a quantidade desejada:");
+                                    int quantidade = scanner.nextInt();
+                                    scanner.nextLine(); // Limpar o buffer
+
+                                    String aguaSelecionada = registros.get(indiceAgua - 1);
+                                    double precoAguaSelecionada = precosAgua.get(aguaSelecionada); // Buscar o preço da água selecionada
+
+                                    Pedido novoPedido = new Pedido(clienteSelecionado, aguaSelecionada, quantidade, precoAguaSelecionada);
+                                    pedidos.add(novoPedido);
+
+                                    LocalDateTime dataHoraAtual = LocalDateTime.now(ZoneId.of("America/Recife")); // Capturar a data e hora no fuso horário correto
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                                    String dataFormatada = dataHoraAtual.format(formatter);
+
+                                    double precoTotal = quantidade * precoAguaSelecionada;
+
+                                    System.out.println("Relatório do Pedido:");
+                                    System.out.println("Cliente: " + clienteSelecionado.nome);
+                                    System.out.println("Água: " + aguaSelecionada);
+                                    System.out.println("Quantidade: " + quantidade);
+                                    System.out.println("Data e Hora: " + dataFormatada);
+                                    System.out.println("Preço Total: R$" + precoTotal);
+                                    String pedidoInfo = "Cliente: " + clienteSelecionado.nome + ", Água: " + aguaSelecionada +
+                                            ", Quantidade: " + quantidade + ", Data e Hora: " + dataFormatada +
+                                            ", Preço Total: R$" + precoTotal;
+                                    pedidosPendentes.add(pedidoInfo);
+
+                                    System.out.println("Pedido cadastrado em " + dataFormatada);
+                                } else {
+                                    System.out.println("Opção inválida para a água.");
+                                }
+                            } else {
+                                System.out.println("Não há águas cadastradas.");
+                            }
+                        } else {
+                            System.out.println("Opção inválida para o cliente.");
+                        }
+                    }
+                    break;
+                case 7:
+                    if (pedidosPendentes.isEmpty()) {
+                        System.out.println("Não há pedidos pendentes.");
+                    } else {
+                        System.out.println("Pedidos Pendentes:");
+                        for (String pedido : pedidosPendentes) {
+                            System.out.println(pedido);
+                        }
+                    }
+                    break;
+                case 8:
+                    continuar = false;
+                    System.out.println("Saindo do programa...");
+                    break;
+
+            }
+        }
+    }
+
+    static class Cliente {
+        String nome;
+        String telefone;
+        String endereco;
+
+        public Cliente(String nome, String telefone, String endereco) {
+            this.nome = nome;
+            this.telefone = telefone;
+            this.endereco = endereco;
+        }
+    }
+
+    static class Pedido {
+        Cliente cliente;
+        String agua;
+        int quantidade;
+        LocalDateTime dataHora;
+        double preco;
+
+        public Pedido(Cliente cliente, String agua, int quantidade, double preco) {
+            this.cliente = cliente;
+            this.agua = agua;
+            this.quantidade = quantidade;
+            this.dataHora = LocalDateTime.now();
+            this.preco = preco;
+        }
+    }
+}
