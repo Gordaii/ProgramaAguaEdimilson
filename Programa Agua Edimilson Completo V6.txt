@@ -1,0 +1,407 @@
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Scanner;
+
+public class SistemaPedido {
+    private static ArrayList<String> dadosCliente = new ArrayList<>();
+    private static ArrayList<String> dadosAgua = new ArrayList<>();
+    private static ArrayList<String> dadosPedidos = new ArrayList<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int opcao;
+
+        do {
+            exibirMenu();
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    cadastrarAgua();
+                    break;
+                case 2:
+                    removerAgua();
+                    break;
+                case 3:
+                    cadastrarCliente();
+                    break;
+                case 4:
+                    removerCliente();
+                    break;
+                case 5:
+                    listarClientes();
+                    break;
+                case 6:
+                    cadastrarPedido();
+                    break;
+                case 7:
+                    pedidosPendentes();
+                    break;
+                case 8:
+                    System.out.println("Saindo do menu. Ate logo!");
+                    break;
+                default:
+                    System.out.println("Opcao invalida. Tente novamente.");
+            }
+        } while (opcao != 8);
+    }
+
+    private static void cadastrarAgua() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite a quantidade de litros:");
+        double litros = scanner.nextDouble();
+
+        System.out.println("Digite o preco:");
+        double preco = scanner.nextDouble();
+
+        String dadosAguaString = String.format("%.2f litros = R$%.2f", litros, preco);
+        dadosAgua.add("Agua cadastrada: " + dadosAguaString);
+
+        System.out.println("Agua cadastrada: " + dadosAguaString);
+    }
+
+    private static void removerAgua() {
+        Scanner scanner = new Scanner(System.in);
+
+        if (dadosAgua.isEmpty()) {
+            System.out.println("Nao há aguas cadastradas para remover.");
+            return;
+        }
+
+        System.out.println("Aguas Cadastradas:");
+        for (int i = 0; i < dadosAgua.size(); i++) {
+            System.out.println(i + 1 + ". " + dadosAgua.get(i));
+        }
+
+        System.out.println("0. Voltar");
+
+        System.out.println("Escolha o numero da agua a ser removida:");
+        int escolha = scanner.nextInt();
+
+        if (escolha < 0 || escolha > dadosAgua.size()) {
+            System.out.println("Opcao invalida.");
+            return;
+        }
+
+        if (escolha == 0) {
+            System.out.println("Operacao cancelada.");
+            return;
+        }
+
+        dadosAgua.remove(escolha - 1);
+        System.out.println("Agua mineral removida com sucesso!");
+    }
+
+    private static void cadastrarCliente() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Digite o nome do cliente:");
+        String nome = scanner.nextLine();
+
+        System.out.println("Digite o numero de telefone do cliente (Formato: (xx)x xxxx-xxxx) Apenas numeros:");
+        String telefone;
+        do {
+            telefone = scanner.nextLine();
+            if (telefone.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("Formato incorreto. Digite novamente (Formato: (xx)x xxxx-xxxx) Apenas numeros:");
+            }
+        } while (true);
+
+        System.out.println("Digite o endereco do cliente:");
+        String endereco = scanner.nextLine();
+
+        String dadosClienteString = String.format("Nome: %s | Numero de telefone: %s | Endereco: %s", nome, formatarTelefone(telefone), endereco);
+        dadosCliente.add(dadosClienteString);
+
+        System.out.println("Cliente cadastrado com sucesso!");
+    }
+
+    private static String formatarTelefone(String telefone) {
+        return String.format("(%s) %s-%s", telefone.substring(0, 2), telefone.substring(2, 7), telefone.substring(7));
+    }
+
+    private static void removerCliente() {
+        Scanner scanner = new Scanner(System.in);
+
+        if (dadosCliente.isEmpty()) {
+            System.out.println("Nao há clientes cadastrados para remover.");
+            return;
+        }
+
+        System.out.println("Lista de Clientes:");
+        for (int i = 0; i < dadosCliente.size(); i++) {
+            System.out.println(i + 1 + ". " + dadosCliente.get(i));
+        }
+
+        System.out.println("0. Voltar");
+
+        System.out.println("Escolha o numero do cliente a ser removido:");
+        int escolha = scanner.nextInt();
+
+        if (escolha < 0 || escolha > dadosCliente.size()) {
+            System.out.println("Opcao invalida.");
+            return;
+        }
+
+        if (escolha == 0) {
+            System.out.println("Operacao cancelada.");
+            return;
+        }
+
+        dadosCliente.remove(escolha - 1);
+        System.out.println("Cliente removido com sucesso!");
+    }
+
+    private static void listarClientes() {
+        if (dadosCliente.isEmpty()) {
+            System.out.println("Nao há clientes cadastrados.");
+            return;
+        }
+
+        System.out.println("Lista de Clientes:");
+        for (int i = 0; i < dadosCliente.size(); i++) {
+            System.out.println(i + 1 + ". " + dadosCliente.get(i));
+        }
+
+        System.out.println("0. Voltar");
+        System.out.println("Escolha o numero do cliente para ver mais opcoes:");
+        Scanner scanner = new Scanner(System.in);
+        int escolha = scanner.nextInt();
+
+        if (escolha == 0) {
+            System.out.println("Operacao cancelada.");
+            return;
+        }
+
+        if (escolha > 0 && escolha <= dadosCliente.size()) {
+            exibirOpcoesCliente(escolha - 1);
+        } else {
+            System.out.println("Opcao invalida.");
+        }
+    }
+
+    private static void exibirOpcoesCliente(int index) {
+        System.out.println("1. Atualizar Cliente");
+        System.out.println("2. Remover Cliente");
+        System.out.println("0. Voltar");
+
+        Scanner scanner = new Scanner(System.in);
+        int opcao = scanner.nextInt();
+
+        switch (opcao) {
+            case 1:
+                System.out.println("Cliente atualizado com sucesso!");
+                break;
+            case 2:
+                dadosCliente.remove(index);
+                System.out.println("Cliente removido com sucesso!");
+                break;
+            case 0:
+                System.out.println("Operacao cancelada.");
+                break;
+            default:
+                System.out.println("Opcao invalida.");
+        }
+    }
+
+    private static void cadastrarPedido() {
+    Scanner scanner = new Scanner(System.in);
+
+    if (dadosCliente.isEmpty()) {
+        System.out.println("Nao há clientes cadastrados para realizar um pedido.");
+        return;
+    }
+
+    System.out.println("Lista de Clientes:");
+    for (int i = 0; i < dadosCliente.size(); i++) {
+        System.out.println(i + 1 + ". " + dadosCliente.get(i));
+    }
+
+    System.out.println("0. Voltar");
+    System.out.println("Escolha o numero do cliente para fazer o pedido:");
+    int escolhaCliente = scanner.nextInt();
+
+    if (escolhaCliente == 0) {
+        System.out.println("Operacao cancelada.");
+        return;
+    }
+
+    if (escolhaCliente > 0 && escolhaCliente <= dadosCliente.size()) {
+        System.out.println("Aguas Cadastradas:");
+        for (int i = 0; i < dadosAgua.size(); i++) {
+            System.out.println(i + 1 + ". " + dadosAgua.get(i));
+        }
+
+        System.out.println("0. Voltar");
+        System.out.println("Escolha o numero da agua desejada:");
+        int escolhaAgua = scanner.nextInt();
+
+        if (escolhaAgua == 0) {
+            System.out.println("Operacao cancelada.");
+            return;
+        }
+
+        if (escolhaAgua > 0 && escolhaAgua <= dadosAgua.size()) {
+            System.out.println("Digite a quantidade de aguas desejadas:");
+            int quantidade = scanner.nextInt();
+
+            double precoAgua = extrairPreco(dadosAgua.get(escolhaAgua - 1));
+            double precoTotal = quantidade * precoAgua;
+
+            String cliente = dadosCliente.get(escolhaCliente - 1);
+            String agua = dadosAgua.get(escolhaAgua - 1);
+            String dataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+
+            // Corrigindo a criação da string de pedido
+            String dadosPedidoString = String.format(
+                    "%d. %s | Quantidade de Agua: %d | %s | Preco Total do Pedido: R$%.2f | Data e Hora: %s",
+                    dadosPedidos.size() + 1, cliente, quantidade, agua, precoTotal, dataHora);
+
+            dadosPedidos.add(dadosPedidoString);
+
+            System.out.println("Pedido cadastrado com sucesso!");
+        } else {
+            System.out.println("Opcao invalida.");
+        }
+    } else {
+        System.out.println("Opcao invalida.");
+    }
+}
+
+    private static double extrairPreco(String dadosAgua) {
+        String[] partes = dadosAgua.split(" = R\\$");
+        return Double.parseDouble(partes[1]);
+    }
+
+    private static void pedidosPendentes() {
+    if (dadosPedidos.isEmpty()) {
+        System.out.println("Nao há pedidos pendentes.");
+        return;
+    }
+
+    System.out.println("Pedidos Pendentes:");
+    for (int i = 0; i < dadosPedidos.size(); i++) {
+        System.out.println(dadosPedidos.get(i));
+    }
+
+    System.out.println("Opcoes:");
+    System.out.println("1. Remover Pedidos");
+    System.out.println("2. Atualizar Pedidos");
+    System.out.println("0. Voltar");
+
+    Scanner scanner = new Scanner(System.in);
+    int escolha = scanner.nextInt();
+
+    switch (escolha) {
+        case 1:
+            removerPedidos();
+            break;
+        case 2:
+            atualizarPedidos();
+            break;
+        case 0:
+            System.out.println("Operacao cancelada.");
+            break;
+        default:
+            System.out.println("Opcao invalida.");
+    }
+}
+
+private static void removerPedidos() {
+    Scanner scanner = new Scanner(System.in);
+
+    System.out.println("Escolha o numero do pedido a ser removido:");
+    int escolhaPedido = scanner.nextInt();
+
+    if (escolhaPedido > 0 && escolhaPedido <= dadosPedidos.size()) {
+        dadosPedidos.remove(escolhaPedido - 1);
+        System.out.println("Pedido removido com sucesso!");
+
+        // Atualizar os números dos pedidos restantes
+        for (int i = escolhaPedido - 1; i < dadosPedidos.size(); i++) {
+            String pedidoAtualizado = dadosPedidos.get(i)
+                    .replaceFirst("\\d+\\.", (i + 1) + ".");
+            dadosPedidos.set(i, pedidoAtualizado);
+        }
+    } else {
+        System.out.println("Opcao invalida.");
+    }
+}
+
+    private static void atualizarPedidos() {
+    Scanner scanner = new Scanner(System.in);
+
+    System.out.println("Escolha o numero do pedido a ser atualizado:");
+    int escolhaPedido = scanner.nextInt();
+
+    if (escolhaPedido > 0 && escolhaPedido <= dadosPedidos.size()) {
+        scanner.nextLine(); // Limpar o buffer
+        System.out.println("Digite o novo nome do cliente:");
+        String novoNome = scanner.nextLine();
+
+        System.out.println("Digite o novo numero de telefone do cliente (Formato: (xx)x xxxx-xxxx) Apenas numeros:");
+        String novoTelefone;
+        do {
+            novoTelefone = scanner.nextLine();
+            if (novoTelefone.matches("\\d{11}")) {
+                break;
+            } else {
+                System.out.println("Formato incorreto. Digite novamente (Formato: (xx)x xxxx-xxxx) Apenas numeros:");
+            }
+        } while (true);
+
+        System.out.println("Digite o novo endereco do cliente:");
+        String novoEndereco = scanner.nextLine();
+
+        System.out.println("Aguas Cadastradas:");
+        for (int i = 0; i < dadosAgua.size(); i++) {
+            System.out.println(i + 1 + ". " + dadosAgua.get(i));
+        }
+
+        System.out.println("Escolha o numero da nova agua desejada:");
+        int escolhaAgua = scanner.nextInt();
+
+        if (escolhaAgua > 0 && escolhaAgua <= dadosAgua.size()) {
+            System.out.println("Digite a nova quantidade de aguas desejadas:");
+            int novaQuantidade = scanner.nextInt();
+
+            double precoAgua = extrairPreco(dadosAgua.get(escolhaAgua - 1));
+            double precoTotal = novaQuantidade * precoAgua;
+
+            String agua = dadosAgua.get(escolhaAgua - 1);
+            String dataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+
+            String dadosPedidoString = String.format(
+                    "%d. Nome: %s | Numero de telefone: %s | Endereco: %s | Quantidade de Agua: %d | %s | Preco Total do Pedido: R$%.2f | Data e Hora: %s",
+                    escolhaPedido, novoNome, formatarTelefone(novoTelefone), novoEndereco, novaQuantidade, agua, precoTotal, dataHora);
+
+            dadosPedidos.set(escolhaPedido - 1, dadosPedidoString);
+
+            System.out.println("Pedido atualizado com sucesso!");
+        } else {
+            System.out.println("Opcao invalida.");
+        }
+    } else {
+        System.out.println("Opcao invalida.");
+    }
+}
+
+
+    private static void exibirMenu() {
+        System.out.println("\n=== MENU ===");
+        System.out.println("1. Cadastrar Agua");
+        System.out.println("2. Remover Agua");
+        System.out.println("3. Cadastrar Cliente");
+        System.out.println("4. Remover Cliente");
+        System.out.println("5. Listar Clientes");
+        System.out.println("6. Cadastrar Pedido");
+        System.out.println("7. Pedidos Pendentes");
+        System.out.println("8. Sair");
+        System.out.print("Escolha a opcao desejada: ");
+    }
+}
